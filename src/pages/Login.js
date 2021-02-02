@@ -2,9 +2,12 @@ import React, {Component} from "react";
 import '../css/Login.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from "axios";
-import  qs from 'qs';
+import qs from 'qs';
+import Cookies from "universal-cookie";
 
 const loginUrl = "http://localhost:8000/api/user/login";
+const cookies = new Cookies();
+
 class Login extends Component {
     state = {
         form: {
@@ -24,21 +27,36 @@ class Login extends Component {
     }
 
     iniciarSesion = async () => {
-let data = qs.stringify({
-    'json': '{"email":"'+this.state.form.email+'","password":"'+this.state.form.password+'","getToken":""}'
-});
+        let data = qs.stringify({
+            'json': '{"email":"' + this.state.form.email + '","password":"' + this.state.form.password + '","getToken":""}'
+        });
         await axios.post(loginUrl, data)
-            .then(reponse => {
-                console.log(reponse.data);
+            .then(response => {
+                return response.data;
+            })
+            .then(response => {
+                if (response.length > 0) {
+                    cookies.set('jwt', response, {path: "/"})
+                    alert('Bienvenido');
+                    window.location.href = "./menu";
+                } else {
+                    alert('usuario o  password incorrectos');
+                }
             })
             .catch(error => {
                 console.log(error);
             })
     }
 
+    componentDidMount() {
+        if (cookies.get('jwt')) {
+            window.location.href = "./menu";
+        }
+    }
+
     render() {
         return (
-            <div className="containerPrincipal">
+            <div className="containerPrincipal border border-primary">
                 <div className="containerSecundario">
                     <div className="form-group">
                         <label>Email:</label>
