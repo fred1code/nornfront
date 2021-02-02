@@ -1,43 +1,36 @@
-import React, {Component} from 'react';
-import {withStyles, makeStyles} from '@material-ui/core/styles';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Paper from '@material-ui/core/Paper';
+import React, {Component, useState} from 'react';
 import Cookies from "universal-cookie";
 import '../css/Menu.css';
 import qs from "qs";
 import axios from "axios";
+import {Table, Button, Container, Modal, ModalBody, ModalHeader, FormGroup, ModalFooter} from 'reactstrap';
 
 const cookies = new Cookies();
 
-var rows = [];
+//var rows = [] = useState(0);
 var valores;
+
 class Menu extends Component {
     cerrarSesion = () => {
         cookies.remove('jwt', {path: "/"});
         window.location.href = "/";
     }
-
-   imprimir () {
-
-         rows.map((row)=>{
-             let tpl = `<tr component="th" scope="row">
-                            <th scope="row">${row.id}</th>
-                            <td>${row.name}</td>
-                            <td>${row.email}</td>
-                            <td>${row.birthday}</td>
-                            <td>${row.phone}</td>
-                            <td>${row.sex}</td>
-                            <td>${row.profile}</td>
-                        </tr> `;
-            valores= valores+tpl;
-         });
-        console.log(valores);
-    };
+    /*
+       imprimir () {
+             rows.map((row)=>{
+                 let tpl = `<tr component="th" scope="row">
+                                <th scope="row">${row.id}</th>
+                                <td>${row.name}</td>
+                                <td>${row.email}</td>
+                                <td>${row.birthday}</td>
+                                <td>${row.phone}</td>
+                                <td>${row.sex}</td>
+                                <td>${row.profile}</td>
+                            </tr> `;
+                valores= valores+tpl;
+             });
+            console.log(valores);
+        };*/
 
     getData = async () => {
         var config = {
@@ -49,36 +42,36 @@ class Menu extends Component {
         }
         await axios(config)
             .then(response => {
-                rows = response.data.body;
-                console.log(this.imprimir());
+               // rows = response.data;
                 return response.data;
+
             })
             .catch(error => {
                 console.log(error);
             })
     }
+
     componentDidMount() {
         if (!cookies.get('jwt')) {
             window.location.href = "./";
         }
     }
 
+
     render() {
         console.log(cookies.get('jwt'));
+        console.log(this.getData().data);
         return (
             <div>
                 <nav className="navbar navbar-dark bg-dark">
                     <a className="navbar-brand">
                         <img src={process.env.PUBLIC_URL + '/logo192.png'} width="30" height="30" alt=""/>
                     </a>
-
                     <label onClick={() => this.getData()}>nombre</label>
                     <a className="log" onClick={() => this.cerrarSesion()}>
                         logout
                     </a>
-
                 </nav>
-
 
                 <table className="table table-dark">
                     <thead>
@@ -91,12 +84,8 @@ class Menu extends Component {
                     </tr>
                     </thead>
                     <tbody>
-
                     {valores}
-
                     </tbody>
-
-
                 </table>
 
 
